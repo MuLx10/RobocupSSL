@@ -15,7 +15,7 @@ class kubs:
     
     def __init__(self, kubs_id,state, pub):
         self.kubs_id = kubs_id
-        self.pos = None
+        self.pos = state.homePos[kubs_id]
         self.vx = 0
         self.vy = 0
         self.vw = 0
@@ -122,43 +122,43 @@ class kubs:
     def get_pos(self):
         return self.pos
 
-    def bs_callback(self, data):
-        self.state.isteamyellow                 = data.isteamyellow
-        self.state.frame_number                 = data.frame_number
-        self.state.t_capture                    = data.t_capture
-        self.state.ballPos                      = data.ballPos
-        self.state.ballVel                      = data.ballVel
-        self.state.awayPos                      = data.awayPos
-        self.state.homePos                      = data.homePos
-        self.state.awayVel                      = data.awayVel
-        self.state.homeVel                      = data.homeVel
-        self.state.ballDetected                 = data.ballDetected
-        self.state.homeDetected                 = data.homeDetected
-        self.state.awayDetected                 = data.awayDetected
-        self.state.our_bot_closest_to_ball      = data.our_bot_closest_to_ball
-        self.state.opp_bot_closest_to_ball      = data.opp_bot_closest_to_ball
-        self.state.our_goalie                   = data.our_goalie
-        self.state.opp_goalie                   = data.opp_goalie
-        self.state.opp_bot_marking_our_attacker = data.opp_bot_marking_our_attacker
-        self.state.ball_at_corners              = data.ball_at_corners
-        self.state.ball_in_our_half             = data.ball_in_our_half
-        self.state.ball_in_our_possession       = data.ball_in_our_possession
+    # def bs_callback(self, data):
+    #     self.state.isteamyellow                 = data.isteamyellow
+    #     self.state.frame_number                 = data.frame_number
+    #     self.state.t_capture                    = data.t_capture
+    #     self.state.ballPos                      = data.ballPos
+    #     self.state.ballVel                      = data.ballVel
+    #     self.state.awayPos                      = data.awayPos
+    #     self.state.homePos                      = data.homePos
+    #     self.state.awayVel                      = data.awayVel
+    #     self.state.homeVel                      = data.homeVel
+    #     self.state.ballDetected                 = data.ballDetected
+    #     self.state.homeDetected                 = data.homeDetected
+    #     self.state.awayDetected                 = data.awayDetected
+    #     self.state.our_bot_closest_to_ball      = data.our_bot_closest_to_ball
+    #     self.state.opp_bot_closest_to_ball      = data.opp_bot_closest_to_ball
+    #     self.state.our_goalie                   = data.our_goalie
+    #     self.state.opp_goalie                   = data.opp_goalie
+    #     self.state.opp_bot_marking_our_attacker = data.opp_bot_marking_our_attacker
+    #     self.state.ball_at_corners              = data.ball_at_corners
+    #     self.state.ball_in_our_half             = data.ball_in_our_half
+    #     self.state.ball_in_our_possession       = data.ball_in_our_possession
 
-        self.isteamyellow = data.isteamyellow
-        self.pos = data.homePos[self.kubs_id]
-        # self.vx = data.homeVel[self.kubs_id].x
-        # self.vy = data.homeVel[self.kubs_id].y
-        self.c=self.c+1
-        print(self.state.ballPos.x, self.state.ballPos.y)
-        print("shubham   "+str(self.c))
+    #     self.isteamyellow = data.isteamyellow
+    #     self.pos = data.homePos[self.kubs_id]
+    #     # self.vx = data.homeVel[self.kubs_id].x
+    #     # self.vy = data.homeVel[self.kubs_id].y
+    #     self.c=self.c+1
+    #     print(self.state.ballPos.x, self.state.ballPos.y)
+    #     print("shubham   "+str(self.c))
 
-        #print(str(self.state.ballPos.x))
-        #if data.homeDetected[self.kubs_id] == True:
-            #print("kubs_id " + str(self.kubs_id) + "Detected")
-        #else:
-            #print("kubs_id " + str(self.kubs_id) + "Not Detected")
+    #     #print(str(self.state.ballPos.x))
+    #     #if data.homeDetected[self.kubs_id] == True:
+    #         #print("kubs_id " + str(self.kubs_id) + "Detected")
+    #     #else:
+    #         #print("kubs_id " + str(self.kubs_id) + "Not Detected")
 
-    def kubsBelief(self):
-        #rospy.init_node('kubs_node', anonymous=False)
-        rospy.Subscriber('/belief_state',BeliefState,self.bs_callback,queue_size=1000)
+    # def kubsBelief(self):
+    #     #rospy.init_node('kubs_node', anonymous=False)
+    #     rospy.Subscriber('/belief_state',BeliefState,self.bs_callback,queue_size=1000)
        # rospy.spin()

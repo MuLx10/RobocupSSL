@@ -13,8 +13,8 @@ from utils.math_functions import *
 kub = None
 start_time = None
 GOAL_POINT = None
-FLAG_move = True
-FLAG_turn = True
+FLAG_move = False
+FLAG_turn = False
 rotate = 0
 init_angle = 0
 
@@ -36,7 +36,7 @@ def reset():
     start_time = 1.0*start_time.secs + 1.0*start_time.nsecs/pow(10,9)
     
 def execute(startTime):
-    global GOAL_POINT, start_time,FIRST_CALL
+    global GOAL_POINT, start_time,FIRST_CALL,FLAG_turn,FLAG_move
     # print 
     if FIRST_CALL:
         start_time = startTime
@@ -49,7 +49,7 @@ def execute(startTime):
     vw = Get_Omega(kub.kubs_id,rotate,kub.state.homePos)
     
     if not vw:
-        print "Didn't receive Omega"
+        # print "Didn't receive Omega"
         vw = 0
 
     if(REPLANNED):
@@ -59,10 +59,16 @@ def execute(startTime):
 
     # print radian_2_deg(kub.state.homePos[kub.kubs_id].theta),radian_2_deg(rotate),vw
 
-    if abs(radian_2_deg(kub.state.homePos[kub.kubs_id].theta)-radian_2_deg(rotate))<ROTATION_FACTOR:
+    if abs(kub.state.homePos[kub.kubs_id].theta-rotate)<ROTATION_FACTOR:
         kub.turn(0)
+        FLAG_turn = True
+
 
     if dist(kub.state.homePos[kub.kubs_id], GOAL_POINT) < DISTANCE_THRESH :
         kub.move(0,0)
+        FLAG_move = True
     
     kub.execute()
+    return FLAG_move and FLAG_turn
+
+

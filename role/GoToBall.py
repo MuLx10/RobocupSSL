@@ -24,6 +24,7 @@ class GoToBall(behavior.Behavior):
         super(GoToBall,self).__init__()
         # self.kub = kub
 
+    	self.power = 7.0
 
         self.add_state(GoToBall.State.setup,
             behavior.Behavior.State.running)
@@ -44,7 +45,7 @@ class GoToBall(behavior.Behavior):
             GoToBall.State.drive,lambda: not self.at_target_point(),'restart')
 
         self.add_transition(GoToBall.State.drive,
-            GoToBall.state.near,lambda:self.at_target_point(),'complete')
+            GoToBall.State.near,lambda:self.at_target_point(),'complete')
 
         self.add_transition(GoToBall.State.near,
             GoToBall.State.near,lambda:not self.at_ball_pos(),'restart')
@@ -62,11 +63,13 @@ class GoToBall(behavior.Behavior):
         return self.target_point is not None
 
     def at_target_point(self):
-        #print (dist(self.target_point,self.kub.get_pos(),210)
-        return dist(self.target_point,self.kub.get_pos()) < 210.0
+        # print (self.target_point.x,self.target_point.y,self.kub.get_pos(),210)
+        # print dist(self.target_point,self.kub.get_pos()) , DISTANCE_THRESH
+        return dist(self.target_point,self.kub.get_pos()) < DISTANCE_THRESH
 
     def at_ball_pos(self):
-        return dist(self.kub.state.ballPos,self.kub.get_pos()) < 210.0
+        # print dist(self.kub.state.ballPos,self.kub.get_pos()) , DISTANCE_THRESH/3
+        return dist(self.kub.state.ballPos,self.kub.get_pos()) < DISTANCE_THRESH/3
 
     def terminate(self):
         super().terminate()
@@ -74,7 +77,9 @@ class GoToBall(behavior.Behavior):
     def on_enter_setup(self):
         pass
     def execute_setup(self):
+        # self.target_point = self.kub.state.ballPos
         self.target_point = getPointBehindTheBall(self.kub.state.ballPos,self.theta)
+        # print self.target_point.x,self.target_point.y
         _GoToPoint.init(self.kub, self.target_point, self.theta)
         pass
         
@@ -93,7 +98,7 @@ class GoToBall(behavior.Behavior):
         pass
 
     def on_enter_near(self):
-        theta = self.kub.homePos[self.kub.kubs_id].theta
+        theta = self.kub.get_pos().theta
         _GoToPoint.init(self.kub, self.kub.state.ballPos, theta)
         pass
 
@@ -102,7 +107,12 @@ class GoToBall(behavior.Behavior):
         start_time = 1.0*start_time.secs + 1.0*start_time.nsecs/pow(10,9)   
         t = _GoToPoint.execute(start_time)
 
+    def disable_kick(self):
+    	self.power = 0.0
+
     def on_exit_near(self):
+    	self.kub.kick(self.power)
+    	self.kub.execute()
         pass
 
 
