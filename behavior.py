@@ -42,7 +42,7 @@ class Behavior(fsm.StateMachine):
             if self.is_in_state(state): return True
 
         return False
-    
+
     ## Set the behavior to failed if sub behaviors remains uncompleted
     def set_failed(self):
         if self.is_done_running():

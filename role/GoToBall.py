@@ -8,8 +8,8 @@ class GoToBall(behavior.Behavior):
     """docstring for GoToBall"""
     class State(Enum):
         setup = 1 
-        drive = 2
-        near = 3
+        course_approach = 2
+        fine_approach = 3
     ##
     ## @brief      
     ## Constructs the object.
@@ -29,28 +29,28 @@ class GoToBall(behavior.Behavior):
         self.add_state(GoToBall.State.setup,
             behavior.Behavior.State.running)
 
-        self.add_state(GoToBall.State.drive,
+        self.add_state(GoToBall.State.course_approach,
             behavior.Behavior.State.running)
         
-        self.add_state(GoToBall.State.near,
+        self.add_state(GoToBall.State.fine_approach,
             behavior.Behavior.State.running)
 
         self.add_transition(behavior.Behavior.State.start,
             GoToBall.State.setup,lambda: True,'immediately')
 
         self.add_transition(GoToBall.State.setup,
-            GoToBall.State.drive,lambda: self.target_present(),'setup')
+            GoToBall.State.course_approach,lambda: self.target_present(),'setup')
 
-        self.add_transition(GoToBall.State.drive,
-            GoToBall.State.drive,lambda: not self.at_target_point(),'restart')
+        self.add_transition(GoToBall.State.course_approach,
+            GoToBall.State.course_approach,lambda: not self.at_target_point(),'restart')
 
-        self.add_transition(GoToBall.State.drive,
-            GoToBall.State.near,lambda:self.at_target_point(),'complete')
+        self.add_transition(GoToBall.State.course_approach,
+            GoToBall.State.fine_approach,lambda:self.at_target_point(),'complete')
 
-        self.add_transition(GoToBall.State.near,
-            GoToBall.State.near,lambda:not self.at_ball_pos(),'restart')
+        self.add_transition(GoToBall.State.fine_approach,
+            GoToBall.State.fine_approach,lambda:not self.at_ball_pos(),'restart')
 
-        self.add_transition(GoToBall.State.near,
+        self.add_transition(GoToBall.State.fine_approach,
             behavior.Behavior.State.completed,lambda:self.at_ball_pos(),'complete')
     
     def add_kub(self,kub):
@@ -86,23 +86,23 @@ class GoToBall(behavior.Behavior):
     def on_exit_setup(self):
         pass
 
-    def on_enter_drive(self):
+    def on_enter_course_approach(self):
         pass
 
-    def execute_drive(self):
+    def execute_course_approach(self):
         start_time = rospy.Time.now()
         start_time = 1.0*start_time.secs + 1.0*start_time.nsecs/pow(10,9)   
         t = _GoToPoint.execute(start_time)
 
-    def on_exit_drive(self):
+    def on_exit_course_approach(self):
         pass
 
-    def on_enter_near(self):
+    def on_enter_fine_approach(self):
         theta = self.kub.get_pos().theta
         _GoToPoint.init(self.kub, self.kub.state.ballPos, theta)
         pass
 
-    def execute_near(self):
+    def execute_fine_approach(self):
         start_time = rospy.Time.now()
         start_time = 1.0*start_time.secs + 1.0*start_time.nsecs/pow(10,9)   
         t = _GoToPoint.execute(start_time)
@@ -110,7 +110,7 @@ class GoToBall(behavior.Behavior):
     def disable_kick(self):
     	self.power = 0.0
 
-    def on_exit_near(self):
+    def on_exit_fine_approach(self):
     	self.kub.kick(self.power)
     	self.kub.execute()
         pass
