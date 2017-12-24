@@ -35,8 +35,8 @@ DBOX_DEPTH                   = SELECT(10, 10)
 BALL_AT_CORNER_THRESH        = SELECT(20,20) 
 
 #Bot Parameteres configuration 
-ROTATION_FACTOR            = SELECT(0.05, 0.05)               
-DISTANCE_THRESH            = 2*SELECT(200.0,200.0)
+ROTATION_FACTOR            = SELECT(0.15, 0.15)               
+DISTANCE_THRESH            = 1.5*SELECT(200.0,200.0)
 
 RFACTOR                    = SELECT(3,   0.3)
 RFACTOR_SMALL              = SELECT(0.6, 0.15)

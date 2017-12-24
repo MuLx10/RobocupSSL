@@ -44,7 +44,7 @@ class CoordinatedPass(composite_behavior.CompositeBehavior):
                  prekick_timeout=None,
                  receiver_required=True,
                  kicker_required=True):
-        super().__init__(continuous=False)
+        super(CoordinatedPass,self).__init__(continuous=False)
 
         # This creates a new instance of skillreceiver every time the constructor is
         # called (instead of pulling from a single static instance).

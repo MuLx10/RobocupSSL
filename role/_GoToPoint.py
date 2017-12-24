@@ -10,24 +10,29 @@ from utils.geometry import Vector2D
 from utils.config import *
 from utils.math_functions import *
 
+import memcache
+shared = memcache.Client(['127.0.0.1:11211'],debug=0)
+
 kub = None
 start_time = None
 GOAL_POINT = None
 FLAG_move = False
 FLAG_turn = False
 rotate = 0
-init_angle = 0
 
 FIRST_CALL = True
 
 
 def init(_kub,target,theta):
-    global kub,GOAL_POINT,rotate
+    global kub,GOAL_POINT,rotate,FLAG_turn,FLAG_move,FIRST_CALL
     kub = _kub
     GOAL_POINT = point_2d()
     rotate = theta
     GOAL_POINT.x = target.x
     GOAL_POINT.y = target.y
+    FLAG_move = False
+    FLAG_turn = False
+    FIRST_CALL = True
 
 
 def reset():
@@ -35,40 +40,61 @@ def reset():
     start_time = rospy.Time.now()
     start_time = 1.0*start_time.secs + 1.0*start_time.nsecs/pow(10,9)
     
-def execute(startTime):
-    global GOAL_POINT, start_time,FIRST_CALL,FLAG_turn,FLAG_move
-    # print 
+def execute(startTime,DIST_THRESH):
+    global GOAL_POINT, start_time,FIRST_CALL,FLAG_turn,FLAG_move,kub
+
+    # print DIST_THRESH
     if FIRST_CALL:
         start_time = startTime
         FIRST_CALL = False
 
-    t = rospy.Time.now()
-    t = t.secs + 1.0*t.nsecs/pow(10,9)
+    while not (FLAG_move and FLAG_turn):
+        # print not (FLAG_move and FLAG_turn)
 
-    [vx, vy, vw, REPLANNED] = Get_Vel(start_time, t, kub.kubs_id, GOAL_POINT, kub.state.homePos, kub.state.awayPos)
-    vw = Get_Omega(kub.kubs_id,rotate,kub.state.homePos)
-    
-    if not vw:
-        # print "Didn't receive Omega"
-        vw = 0
+        kub.state = shared.get('state')
+        # print " in _ ",kub.state.ballPos.x
+        
+        t = rospy.Time.now()
+        t = t.secs + 1.0*t.nsecs/pow(10,9)
 
-    if(REPLANNED):
-        reset()
-    kub.move(vx, vy)
-    kub.turn(vw)
+        [vx, vy, vw, REPLANNED] = Get_Vel(start_time, t, kub.kubs_id, GOAL_POINT, kub.state.homePos, kub.state.awayPos)
+        vw = Get_Omega(kub.kubs_id,rotate,kub.state.homePos)
+        
+        if not vw:
+            # print "Didn't receive Omega"
+            vw = 0
 
-    # print radian_2_deg(kub.state.homePos[kub.kubs_id].theta),radian_2_deg(rotate),vw
+        if(REPLANNED):
+            reset()
+        kub.move(vx, vy)
+        kub.turn(vw)
 
-    if abs(kub.state.homePos[kub.kubs_id].theta-rotate)<ROTATION_FACTOR:
-        kub.turn(0)
-        FLAG_turn = True
+        # print vx,vy,vw
+
+        # print radian_2_deg(kub.state.homePos[kub.kubs_id].theta-rotate),radian_2_deg(ROTATION_FACTOR)
+        # print dist(kub.state.homePos[kub.kubs_id], GOAL_POINT),DIST_THRESH
+        # print kub.state.homePos[kub.kubs_id].x,kub.state.homePos[kub.kubs_id].y
+        # print GOAL_POINT.x,GOAL_POINT.y
+
+        if abs(kub.state.homePos[kub.kubs_id].theta-rotate)<ROTATION_FACTOR:
+            kub.turn(0)
+            FLAG_turn = True
 
 
-    if dist(kub.state.homePos[kub.kubs_id], GOAL_POINT) < DISTANCE_THRESH :
-        kub.move(0,0)
-        FLAG_move = True
+        if dist(kub.state.homePos[kub.kubs_id], GOAL_POINT)<DIST_THRESH :
+            kub.move(0,0)
+            FLAG_move = True
+        
+        kub.execute()
+        yield kub,GOAL_POINT
+
+
     
     kub.execute()
-    return FLAG_move and FLAG_turn
+    kub.execute()
+
+    # print "sd", not (FLAG_move and FLAG_turn)
+    # print kub.get_pos().x,kub.get_pos().y,GOAL_POINT.x,GOAL_POINT.y,
+    yield kub,GOAL_POINT
 
 

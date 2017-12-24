@@ -1,11 +1,17 @@
-from role import GoToBall
+from role import GoToBall,GoToPoint
 from utils.math_functions import *
+from utils.config import *
+from utils.geometry import Vector2D
+
 
 import composite_behavior
 import behavior
 import enum
 import logging
 from math import pi,atan2
+
+# import memcache
+# shared = memcache.Client(['127.0.0.1:11211'],debug=False)
 
 class SampleTactic(composite_behavior.CompositeBehavior):
 
@@ -48,33 +54,52 @@ class SampleTactic(composite_behavior.CompositeBehavior):
         #     lambda: self.done_running(),
         #     'done!')
 
-    def done_running():
-        return True
+    # def done_running(self):
+    #     return dist(self.kub.get_pos(),self.kub.state.ballPos)<DISTANCE_THRESH
+
     def add_kub(self,kub):
-    	self.kub = kub
+        self.kub = kub
 
     def on_enter_running(self):
         pass
 
+    def execute_running(self):
+        pass 
+
     def on_exit_running(self):
         self.remove_subbehavior('fetch')
+        self.remove_subbehavior('move')
         pass
 
 
     def on_enter_preparing(self):
-    	self.fetch = GoToBall.GoToBall()
-    	self.fetch.add_kub(self.kub)
-    	self.fetch.add_theta(theta=normalize_angle(pi+atan2(self.kub.state.ballPos.y,self.kub.state.ballPos.y-3000)))
-    	self.add_subbehavior(self.fetch,'fetch')
+        # self.kub.state = shared.get('state')
+        print (self.kub.get_pos().x,self.kub.get_pos().y)
+        self.fetch = GoToBall.GoToBall()
+        self.fetch.add_kub(self.kub)
+        self.fetch.add_theta(theta=normalize_angle(pi+atan2(self.kub.state.ballPos.y,self.kub.state.ballPos.y-3000)))
+        self.add_subbehavior(self.fetch,'fetch')
+
+
+        # self.kub.state = shared.get('state')
+        print (self.kub.get_pos().x,self.kub.get_pos().y)
+        self.fetch = GoToBall.GoToBall()
+        self.fetch.add_kub(self.kub)
+        self.fetch.add_theta(theta=normalize_angle(pi+atan2(self.kub.state.ballPos.y,self.kub.state.ballPos.y-3000)))
+        self.add_subbehavior(self.fetch,'move')
+
+        print (self.kub.get_pos().x,self.kub.get_pos().y)
+        # self.move = GoToPoint.GoToPoint()
+        # self.move.add_kub(self.kub)
+        # self.move.add_point(point=Vector2D(3000,0),orient=normalize_angle(pi))
+        # self.add_subbehavior(self.move,'move')
+
         pass
-
-    def execute_running(self):
-    	pass
-
-        
-
-    # gets robots involved with the pass
 
     def execute_preparing(self):
         pass
+
+    def on_exit_preparing(self):
+        pass
+        
 

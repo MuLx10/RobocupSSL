@@ -87,6 +87,7 @@ class CompositeBehavior(behavior.Behavior):
             if should_spin:
                 try:
                     bhvr.spin()
+                    print bhvr.name
                 except:
                     exc = sys.exc_info()[0]
                     self.handle_subbehavior_exception(name, exc)

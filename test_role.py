@@ -14,7 +14,10 @@ from utils.math_functions import *
 pub = rospy.Publisher('/grsim_data',gr_Commands,queue_size=1000)
 
 
-#kub,kub.state.ballPos,normalize_angle(pi+atan2(state.ballPos.y,state.ballPos.y))
+import memcache
+shared = memcache.Client(['127.0.0.1:11211'],debug=False)
+
+
 
 def g(id_,state):
 	kub = kubs.kubs(id_,state,pub)
@@ -24,20 +27,20 @@ def g(id_,state):
 	g_fsm.add_kub(kub)
 	# g_fsm.add_point(point=kub.state.ballPos,orient=normalize_angle(pi+atan2(state.ballPos.y,state.ballPos.x-3000)))
 	g_fsm.add_theta(theta=normalize_angle(pi+atan2(state.ballPos.y,state.ballPos.y-3000)))
-	# g_fsm.as_graphviz()
-	# g_fsm.write_diagram_png()
+	g_fsm.as_graphviz()
+	g_fsm.write_diagram_png()
 	g_fsm.spin()
-	# print
-	# print kub.state.homePos[kub.kubs_id].theta,t
+	# 
 
-def BS_callback(state):
-	g(0,state)
+
+# def BS_callback(state):
+# 	shared.set('state',state)
+# 	g(0,state)
 
 # for i in xrange(0):
 # 	p = Process(target=g,args=(i,))
 # 	p.start()
 
-#g_fsm1 = GoToBall.GoToBall(kub,deg_2_radian(45))
 
 
 
@@ -45,11 +48,20 @@ def BS_callback(state):
 #print str(kub.kubs_id) + str('***********')
 rospy.init_node('node_new',anonymous=False)
 start_time = rospy.Time.now()
-
 start_time = 1.0*start_time.secs + 1.0*start_time.nsecs/pow(10,9)   
 
-rospy.Subscriber('/belief_state', BeliefState, BS_callback, queue_size=1000)
-rospy.spin()
+# rospy.Subscriber('/belief_state', BeliefState, BS_callback, queue_size=1000)
+
+while True:
+	state = shared.get('state')
+	if state:
+		g(0,state)
+		break
+
+
+
+
+# rospy.spin()
 
 # kub1 = kubs.kubs(0,pub)
 # # print kub1.state.ballPos.y,kub1.state.ballPos.x

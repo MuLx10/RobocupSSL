@@ -19,7 +19,7 @@ class Behavior(fsm.StateMachine):
 
     def __init__(self):
         # print "behav"
-        super(Behavior, self).__init__(start_state=Behavior.State.start)
+        super(Behavior, self).__init__(start_state=Behavior.State.start,end_state=Behavior.State.completed)
         # add base states for Behavior
         self.add_state(Behavior.State.start)
         self.add_state(Behavior.State.running)

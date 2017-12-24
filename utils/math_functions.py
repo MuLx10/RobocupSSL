@@ -29,8 +29,8 @@ def normalize_angle(angle):
     return angle
 
 def getPointBehindTheBall(point ,theta):
-  x = point.x -(1.2 * BOT_RADIUS) *(math.cos(theta))
-  y = point.y -(1.2 * BOT_RADIUS) *(math.sin(theta))
+  x = point.x -(3.5 * BOT_RADIUS) *(math.cos(theta))
+  y = point.y -(3.5 * BOT_RADIUS) *(math.sin(theta))
   return Vector2D(int(x), int(y))
 
 def deg_2_radian(theta):
@@ -45,7 +45,10 @@ def dist(point1,point2):
 def angle_diff(point1,point2):
   return math.atan2(point2.y-point1.y,point2.x-point1.x)
 
-
+def vicinity_points(point1,point2,thresh=10):
+  return  dist(point1,point2)<thresh
+def vicinity_theta(theta1,theta2,thresh=0.1):
+  return abs(theta1-theta2)<thresh
 def angle_at_vextex(P1,P2,P3):
     a     = P2.dist(P3)
     b     = P1.dist(P3)
@@ -66,3 +69,8 @@ def point_in_triangle(t, P):
     a3 = area_of_triangle(P1,P2,P)
 
     return a == a1+a2+a3
+
+def ball_in_front_of_bot(kub):
+  theta1 = kub.get_pos().theta
+  theta2 = math.atan2(kub.state.ballPos.y-kub.get_pos().y,kub.state.ballPos.x-kub.get_pos().x)
+  return vicinity_theta(theta1,theta2,thresh=0.25) and vicinity_points(kub.get_pos(),kub.state.ballPos,thresh=BOT_RADIUS*4)

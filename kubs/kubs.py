@@ -120,7 +120,7 @@ class kubs:
     
 
     def get_pos(self):
-        return self.pos
+        return self.state.homePos[self.kubs_id]
 
     # def bs_callback(self, data):
     #     self.state.isteamyellow                 = data.isteamyellow

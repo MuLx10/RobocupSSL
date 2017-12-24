@@ -15,6 +15,8 @@ from tactics import  sample_tactic
 
 pub = rospy.Publisher('/grsim_data',gr_Commands,queue_size=1000)
 
+import memcache
+shared = memcache.Client(['127.0.0.1:11211'],debug=False)
 
 # flag = True
 def function(id_,state):
@@ -26,8 +28,8 @@ def function(id_,state):
 	g_fsm.add_kub(kub)
 	# print(kub.kubs_id+2)
 
-	# g_fsm.as_graphviz()
-	# g_fsm.write_diagram_png()
+	g_fsm.as_graphviz()
+	g_fsm.write_diagram_png()
 	g_fsm.spin_cb()
 	# print(kub.kubs_id+3)
 
@@ -44,5 +46,11 @@ start_time = rospy.Time.now()
 
 start_time = 1.0*start_time.secs + 1.0*start_time.nsecs/pow(10,9)   
 
-rospy.Subscriber('/belief_state', BeliefState, BS_callback, queue_size=1000)
-rospy.spin()
+
+
+while True:
+	state = shared.get('state')
+	if state:
+		function(0,state)
+		break
+
