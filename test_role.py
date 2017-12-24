@@ -19,7 +19,7 @@ shared = memcache.Client(['127.0.0.1:11211'],debug=False)
 
 
 
-def g(id_,state):
+def function(id_,state):
 	kub = kubs.kubs(id_,state,pub)
 	print(kub.kubs_id)
 	g_fsm = GoToBall.GoToBall()
@@ -33,17 +33,6 @@ def g(id_,state):
 	# 
 
 
-# def BS_callback(state):
-# 	shared.set('state',state)
-# 	g(0,state)
-
-# for i in xrange(0):
-# 	p = Process(target=g,args=(i,))
-# 	p.start()
-
-
-
-
 
 #print str(kub.kubs_id) + str('***********')
 rospy.init_node('node_new',anonymous=False)
@@ -55,27 +44,9 @@ start_time = 1.0*start_time.secs + 1.0*start_time.nsecs/pow(10,9)
 while True:
 	state = shared.get('state')
 	if state:
-		g(0,state)
+		function(0,state)
 		break
 
 
 
 
-# rospy.spin()
-
-# kub1 = kubs.kubs(0,pub)
-# # print kub1.state.ballPos.y,kub1.state.ballPos.x
-# # while True:
-# # 	pass
-# g1_fsm = GoToBall.GoToBall(kub1,Vector2D(0,3000))
-# g1_fsm.as_graphviz()
-# g1_fsm.write_diagram_png()
-
-# # g_fsm1.spin()
-# g1_fsm.spin()
-# #t = threading.Thread(target=g_fsm.spin())
-# #t1 = threading.Thread(target=g1_fsm.spin())
-
-
-# #t.start()
-# #t1.start()*

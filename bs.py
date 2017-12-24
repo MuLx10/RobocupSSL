@@ -1,8 +1,4 @@
-import rospy,sys
-from krssg_ssl_msgs.msg import point_2d
-from krssg_ssl_msgs.msg import BeliefState
-from krssg_ssl_msgs.msg import gr_Commands
-from krssg_ssl_msgs.msg import gr_Robot_Command
+import rospy
 from krssg_ssl_msgs.msg import BeliefState
 import memcache
 shared = memcache.Client(['127.0.0.1:11211'],debug=False)

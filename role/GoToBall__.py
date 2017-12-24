@@ -15,6 +15,7 @@ class GoToBall(behavior.Behavior):
     def __init__(self,continuous=False):
 
         super(GoToBall,self).__init__()
+        # self.kub = kub
 
         self.name = "GoToBall"
 
@@ -68,9 +69,13 @@ class GoToBall(behavior.Behavior):
         return not ball_in_front_of_bot(self.kub) and self.target_point is not None
 
     def at_target_point(self):
+        # print (self.target_point.x,self.target_point.y,self.kub.get_pos(),210)
+        # print "at tp",dist(self.target_point,self.kub.get_pos()) , DISTANCE_THRESH,self.kub.get_pos().x,self.kub.get_pos().y
+        # print "at tp",self.target_point.x,self.target_point.y
         return vicinity_points(self.target_point,self.kub.get_pos(),thresh= self.initial_target_dist_thresh)
 
     def ball_in_vicinity(self):
+        # print "ibp",ball_in_front_of_bot(self.kub)
         if ball_in_front_of_bot(self.kub):
             self.target_point = None
             return True
@@ -78,6 +83,8 @@ class GoToBall(behavior.Behavior):
 
     def at_ball_pos(self):
         error = 10
+        # print "at bp",dist(self.kub.state.ballPos,self.kub.get_pos()) , DISTANCE_THRESH/2
+        # print (self.kub.state.ballPos.x,self.kub.state.ballPos.y,self.kub.get_pos(),210)
         return vicinity_points(self.kub.get_pos(),self.kub.state.ballPos,thresh=self.ball_dist_thresh+error) 
 
     def terminate(self):
@@ -87,11 +94,13 @@ class GoToBall(behavior.Behavior):
         pass
     def execute_setup(self):
         self.target_point = getPointBehindTheBall(self.kub.state.ballPos,self.theta)
+        # print self.target_point.x,self.target_point.y
         _GoToPoint.init(self.kub, self.target_point, self.theta)
         pass
         
     def on_exit_setup(self):
         
+        # print ball_in_front_of_bot(self.kub)
         pass
 
     def on_enter_course_approach(self):
@@ -104,6 +113,9 @@ class GoToBall(behavior.Behavior):
         for gf in generatingfunction:
             self.kub,target_point = gf
             self.target_point = getPointBehindTheBall(self.kub.state.ballPos,self.theta)
+            # print ball_in_front_of_bot(self.kub)
+            # print (self.behavior_failed,(self.target_point.x,self.target_point.y))
+            # print (self.behavior_failed,(target_point.x,target_point.y))
 
             if not vicinity_points(self.target_point,target_point,thresh=BOT_RADIUS*3.5):
                 self.behavior_failed = True
@@ -126,6 +138,7 @@ class GoToBall(behavior.Behavior):
         for gf in generatingfunction:
             self.kub,ballPos = gf
             
+            # print (self.behavior_failed,(self.kub.state.ballPos.x,self.kub.state.ballPos.y))
             if not vicinity_points(ballPos,self.kub.state.ballPos,thresh=BOT_RADIUS):
                 self.behavior_failed = True
                 break
