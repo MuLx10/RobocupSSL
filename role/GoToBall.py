@@ -100,7 +100,7 @@ class GoToBall(behavior.Behavior):
     def execute_course_approach(self):
         start_time = rospy.Time.now()
         start_time = 1.0*start_time.secs + 1.0*start_time.nsecs/pow(10,9)   
-        generatingfunction = _GoToPoint.execute(start_time,self.initial_target_dist_thresh)
+        generatingfunction = _GoToPoint.execute(start_time,self.initial_target_dist_thresh,True)
         for gf in generatingfunction:
             self.kub,target_point = gf
             self.target_point = getPointBehindTheBall(self.kub.state.ballPos,self.theta)

@@ -22,7 +22,7 @@ FIRST_CALL = 1
 homePos = None
 awayPos = None
 
-def Get_Vel(start, t, kub_id, target, homePos_, awayPos_):
+def Get_Vel(start, t, kub_id, target, homePos_, awayPos_,avoid_ball=False):
     global expectedTraverseTime, REPLAN, v, errorInfo, pso, FIRST_CALL, homePos, awayPos, kubid
     REPLAN = 0
     homePos = homePos_
@@ -35,7 +35,7 @@ def Get_Vel(start, t, kub_id, target, homePos_, awayPos_):
         startPt = point_2d()
         startPt.x = homePos[kubid].x
         startPt.y = homePos[kubid].y
-        findPath(startPt, target)
+        findPath(startPt, target, avoid_ball)
         FIRST_CALL = 0
 
     if distance < 1.5*BOT_BALL_THRESH:
@@ -70,7 +70,7 @@ def Get_Vel(start, t, kub_id, target, homePos_, awayPos_):
         startPt = point_2d()
         startPt.x = homePos[kubid].x
         startPt.y = homePos[kubid].y
-        findPath(startPt,target)
+        findPath(startPt,target, avoid_ball)
 
     errorMag = sqrt(pow(eX,2) + pow(eY,2))
     if  shouldReplan() or \
@@ -82,7 +82,7 @@ def Get_Vel(start, t, kub_id, target, homePos_, awayPos_):
             startPt = point_2d()
             startPt.x = homePos[kubid].x
             startPt.y = homePos[kubid].y
-            findPath(startPt,target)
+            findPath(startPt,target, avoid_ball)
             return [0,0,0, REPLAN]  
     else:
         errorInfo.errorX = eX
@@ -117,7 +117,7 @@ def shouldReplan():
 
     return False
 
-def findPath(startPoint,end):
+def findPath(startPoint,end,avoid_ball=False):
     global FLAG_PATH_RECEIVED, REPLAN
     FLAG_PATH_RECEIVED = 1
     REPLAN = 1
@@ -136,7 +136,8 @@ def findPath(startPoint,end):
     rospy.wait_for_service('planner')
 
     planner = rospy.ServiceProxy('planner', path_plan)
-    message = planner(startPt,target)
+
+    message = planner(startPt,target,avoid_ball)
     path = []
     for i in xrange(len(message.path)):
         path = path + [Vector2D(int(message.path[i].x),int(message.path[i].y))]

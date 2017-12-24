@@ -40,7 +40,7 @@ def reset():
     start_time = rospy.Time.now()
     start_time = 1.0*start_time.secs + 1.0*start_time.nsecs/pow(10,9)
     
-def execute(startTime,DIST_THRESH):
+def execute(startTime,DIST_THRESH,avoid_ball=False):
     global GOAL_POINT, start_time,FIRST_CALL,FLAG_turn,FLAG_move,kub
 
     # print DIST_THRESH
@@ -57,7 +57,7 @@ def execute(startTime,DIST_THRESH):
         t = rospy.Time.now()
         t = t.secs + 1.0*t.nsecs/pow(10,9)
 
-        [vx, vy, vw, REPLANNED] = Get_Vel(start_time, t, kub.kubs_id, GOAL_POINT, kub.state.homePos, kub.state.awayPos)
+        [vx, vy, vw, REPLANNED] = Get_Vel(start_time, t, kub.kubs_id, GOAL_POINT, kub.state.homePos, kub.state.awayPos, avoid_ball)
         vw = Get_Omega(kub.kubs_id,rotate,kub.state.homePos)
         
         if not vw:

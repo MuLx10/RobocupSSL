@@ -34,6 +34,7 @@ krssg_ssl_msgs::point_SF gui_msgs;
 std::vector<krssg_ssl_msgs::point_2d> awayVel;
 std::vector<krssg_ssl_msgs::point_2d> homeVel;
 
+krssg_ssl_msgs::point_2d ballPos;
 /**
  * @brief      Callback for gui msgs
  *
@@ -72,6 +73,10 @@ void Callback(const krssg_ssl_msgs::BeliefState::ConstPtr& msg)
   count_++;
   krssg_ssl_msgs::point_2d vel;
   v.clear();
+
+  ballPos.x = msg->ballPos.x*BS_TO_OMPL;
+  ballPos.y = msg->ballPos.y*BS_TO_OMPL;
+  
   for(int i=0;i<msg->homePos.size();i++){
     p.x = msg->homePos[i].x*BS_TO_OMPL;
     p.y = msg->homePos[i].y*BS_TO_OMPL;
@@ -101,8 +106,18 @@ bool path(krssg_ssl_msgs::path_plan::Request &req,
   start.y = req.start.y;
   target.x = req.target.x;
   target.y = req.target.y;
+  
+
   ROS_INFO("Start (%f %f)  target (%f %f) ",start.x,start.y,target.x,target.y);
   ROS_INFO("Planning");
+
+
+  bool avoid_ball = req.avoid_ball;
+  ROS_INFO("avoid_ball %d",avoid_ball);
+  if (avoid_ball)
+    v.push_back(ballPos);
+
+
   Planning planning(v,v.size(),gui_msgs);
   planning.planSimple();
   planning.plan(start.x*BS_TO_OMPL,start.y*BS_TO_OMPL,

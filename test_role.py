@@ -29,6 +29,7 @@ def function(id_,state):
 	g_fsm.add_theta(theta=normalize_angle(pi+atan2(state.ballPos.y,state.ballPos.y-3000)))
 	g_fsm.as_graphviz()
 	g_fsm.write_diagram_png()
+
 	g_fsm.spin()
 	# 
 
@@ -45,7 +46,7 @@ while True:
 	state = shared.get('state')
 	if state:
 		function(0,state)
-		break
+		# break
 
 
 
