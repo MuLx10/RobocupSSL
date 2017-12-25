@@ -1,6 +1,9 @@
 ## RobocupSSL
 # Additonal requirement 
-`$ sudo apt install memcached python-memcache`
+python-memcache
+```bash
+$ sudo apt install memcached python-memcache
+```
 # Run 
 ```bash
 $ ./kgpkubs_launch/scripts/ssl.sh `
