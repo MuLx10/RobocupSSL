@@ -31,7 +31,7 @@ class PassReceive(single_robot_composite_behavior.SingleRobotCompositeBehavior):
     MarginAngle = math.pi / 18
     StabilizationFrames = 3
     DesperateTimeout = 5
-
+    
     class State(enum.Enum):
         ## we're aligning with the planned receive point
         aligning = 1
@@ -80,7 +80,7 @@ class PassReceive(single_robot_composite_behavior.SingleRobotCompositeBehavior):
 
         self.add_transition(PassReceive.State.receiving,
                             behavior.Behavior.State.completed,
-                            lambda: self.robot.has_ball(), 'ball received!')
+                            lambda: self.kub.has_ball(), 'ball received!')
 
         self.add_transition(
             PassReceive.State.receiving, behavior.Behavior.State.failed,
@@ -121,8 +121,8 @@ class PassReceive(single_robot_composite_behavior.SingleRobotCompositeBehavior):
             abs(self._y_error) < PassReceive.PositionYErrorThreshold)
 
     def is_steady(self):
-        return (self.robot.vel.mag() < PassReceive.SteadyMaxVel and
-                abs(self.robot.angle_vel) < PassReceive.SteadyMaxAngleVel)
+        return (self.kub.get_vel['magnitute'] < PassReceive.SteadyMaxVel and
+                abs(self.kub.get_vel['direction']) < PassReceive.SteadyMaxAngleVel)
 
     # calculates:
     # self._pass_line - the line from the ball along where we think we're going
@@ -132,37 +132,35 @@ class PassReceive(single_robot_composite_behavior.SingleRobotCompositeBehavior):
     # self._y_error
     def recalculate(self):
         # can't do squat if we don't know what we're supposed to do
-        if self.receive_point == None or self.robot == None:
+        if self.receive_point == None or self.kub == None:
             return
 
-        ball = main.ball()
+        ball = self.kub.state.ballPos
 
         if self.ball_kicked:
             # when the ball's in motion, the line is based on the ball's velocity
-            self._pass_line = robocup.Line(ball.pos, ball.pos + ball.vel * 10)
+            self._pass_line = Line(ballPos, ballPos + ball.vel * 10)
         else:
             # if the ball hasn't been kicked yet, we assume it's going to go through the receive point
-            self._pass_line = robocup.Line(ball.pos, self.receive_point)
+            self._pass_line = Line(ballPos, self.receive_point)
 
-        target_angle_rad = (ball.pos - self.robot.pos).angle()
-        angle_rad = self.robot.angle
+        target_angle_rad = ballPos.angle(self.kub.get_pos())
+        angle_rad = self.kub.get_pos().theta
         self._angle_error = target_angle_rad - angle_rad
 
         if self.ball_kicked:
-            actual_receive_point = self._pass_line.nearest_point(
-                self.robot.pos)
+            actual_receive_point = self._pass_line.nearest_point(self.kub.get_pos())
         else:
+            
             actual_receive_point = self.receive_point
 
-        pass_line_dir = (
-            self._pass_line.get_pt(1) - self._pass_line.get_pt(0)).normalized()
+        pass_line_dir = (self._pass_line.get_pt(1) - self._pass_line.get_pt(0)).normalized()
         self._target_pos = actual_receive_point + pass_line_dir * constants.Robot.Radius
 
         # vector pointing down the pass line toward the kicker
-        pass_dir = (
-            self._pass_line.get_pt(0) - self._pass_line.get_pt(1)).normalized()
+        pass_dir = (self._pass_line.get_pt(0) - self._pass_line.get_pt(1)).normalized()
 
-        pos_error = self._target_pos - self.robot.pos
+        pos_error = self._target_pos - self.kub.get_pos()
         self._x_error = pos_error.dot(pass_dir.perp_ccw())
         self._y_error = pos_error.dot(pass_dir)
 
@@ -172,22 +170,22 @@ class PassReceive(single_robot_composite_behavior.SingleRobotCompositeBehavior):
 
     def execute_running(self):
         self.recalculate()
-        self.robot.face(main.ball().pos)
+        self.kub.face(main.ball().pos)
 
-        if self._pass_line != None:
-            main.system_state().draw_line(self._pass_line,
-                                          constants.Colors.Blue, "Pass")
-            main.system_state().draw_circle(self._target_pos, 0.03,
-                                            constants.Colors.Blue, "Pass")
+        # if self._pass_line != None:
+        #     main.system_state().draw_line(self._pass_line,
+        #                                   constants.Colors.Blue, "Pass")
+        #     main.system_state().draw_circle(self._target_pos, 0.03,
+        #                                     constants.Colors.Blue, "Pass")
 
     def execute_aligning(self):
         if self._target_pos != None:
-            self.robot.move_to(self._target_pos)
+            self.kub.move_to(self._target_pos)
 
     def reset_correct_location(self):
         # Extrapolate center of robot location from kick velocity
-        self.kicked_from = main.ball().pos  #- (main.ball().vel / main.ball().vel.mag()) * constants.Robot.Radius * 4
-        self.kicked_vel = main.ball().vel
+        self.kicked_from = self.kub.ballPos  #- (self.kub.ballVel / self.kub.ballVel.mag()) * constants.Robot.Radius * 4
+        self.kicked_vel = self.kub.ballVel
 
     def on_enter_receiving(self):
         capture = self.captureFunction()
@@ -210,7 +208,7 @@ class PassReceive(single_robot_composite_behavior.SingleRobotCompositeBehavior):
             return False
         offset = 0.1
         straight_line = robocup.Point(0, 1)
-        pass_segment = self.robot.pos - self.kicked_from
+        pass_segment = self.kub.get_pos() - self.kicked_from
         pass_distance = pass_segment.mag() + 0.5
         pass_dir = pass_segment.normalized()
 
@@ -266,7 +264,7 @@ class PassReceive(single_robot_composite_behavior.SingleRobotCompositeBehavior):
 
     def __str__(self):
         desc = super().__str__()
-        if self.receive_point != None and self.robot != None:
+        if self.receive_point != None and self.kub != None:
             desc += "\n    target_pos=" + str(self._target_pos)
             desc += "\n    angle_err=" + str(self._angle_error)
             desc += "\n    x_err=" + str(self._x_error)

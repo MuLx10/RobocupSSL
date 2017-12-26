@@ -11,7 +11,7 @@ from utils.config import *
 from utils.math_functions import *
 
 import memcache
-shared = memcache.Client(['127.0.0.1:11211'],debug=0)
+shared = memcache.Client(BS_ADDRESS,debug=0)
 
 kub = None
 start_time = None

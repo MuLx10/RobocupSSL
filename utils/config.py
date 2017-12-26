@@ -11,7 +11,7 @@ def SELECT(sim_param, ssl_param):
         print(" Global Constants Intialization Error!")  
     return ssl_param
 
-
+BS_ADDRESS                   = ['127.0.0.1:11211']
 BOT_MAX                      = SELECT(6, 5)
 BOT_ANGLE_THRESH			 = SELECT(0.32,0.32)
 GOAL_DEPTH                   = SELECT(300, 300)

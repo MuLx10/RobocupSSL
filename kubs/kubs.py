@@ -1,7 +1,7 @@
 import cmd_node
 import rospy
 from krssg_ssl_msgs.msg import BeliefState
-
+from utils.math_functions import kub_has_ball
 ##
 ## @brief      Class for kubs.
 ##
@@ -109,6 +109,9 @@ class kubs:
         cmd_node.send_command(self.pub, self.isteamyellow, self.kubs_id, self.vx, self.vy, self.vw, self.power, self.dribbler)  
         self.reset()
 
+    def has_ball(self):
+        return kub_has_ball(self.state,self.kubs_id)
+
     ##
     ## @brief      Gets the position.
     ##
@@ -118,6 +121,12 @@ class kubs:
     ## @return     The position.
     ##
     
+    def get_vel(self):
+        velo = {
+                'magnitute':magnitute(self.state.homeVel[self.kubs_id]),
+                'direction':direction(self.state.homeVel[self.kubs_id])
+                }
+        return velo
 
     def get_pos(self):
         return self.state.homePos[self.kubs_id]
