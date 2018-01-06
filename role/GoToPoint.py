@@ -52,9 +52,12 @@ class GoToPoint(behavior.Behavior):
             behavior.Behavior.State.failed,lambda: self.behavior_failed,'failed')
 
 
-    def add_point(self,point,orient):
+    def add_point(self,point,orient=None):
         self.target_point = point
-        self.theta = orient
+        if orient:
+            self.theta = orient
+        else:
+            self.theta = self.kub.get_pos().theta
         
     def add_kub(self,kub):
         self.kub = kub
@@ -89,10 +92,15 @@ class GoToPoint(behavior.Behavior):
         generatingfunction = _GoToPoint.execute(start_time,DISTANCE_THRESH)
         for gf in generatingfunction:
             self.kub,target_point = gf
-            # print self.behavior_failed
 
-            if vicinity_points(self.target_point,target_point):
+            # print self.behavior_failed
+            if not vicinity_points(self.target_point,target_point):
+                # print 
+                # print  (self.target_point.x,self.target_point.y)
+                # print  (target_point.x,target_point.y)
+                # print 
                 self.behavior_failed = True
+                # print self.behavior_failed
                 break
         self.new_point = self.kub.get_pos()
         

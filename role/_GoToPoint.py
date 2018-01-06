@@ -69,13 +69,13 @@ def execute(startTime,DIST_THRESH,avoid_ball=False):
         kub.move(vx, vy)
         kub.turn(vw)
 
-        # print vx,vy,vw
+        print vx,vy,vw
 
         # print radian_2_deg(kub.state.homePos[kub.kubs_id].theta-rotate),radian_2_deg(ROTATION_FACTOR)
         # print dist(kub.state.homePos[kub.kubs_id], GOAL_POINT),DIST_THRESH
         # print kub.state.homePos[kub.kubs_id].x,kub.state.homePos[kub.kubs_id].y
         # print GOAL_POINT.x,GOAL_POINT.y
-
+        # print FLAG_move,"flag mobve    fujfgciuygvb"
         if abs(kub.state.homePos[kub.kubs_id].theta-rotate)<ROTATION_FACTOR:
             kub.turn(0)
             FLAG_turn = True

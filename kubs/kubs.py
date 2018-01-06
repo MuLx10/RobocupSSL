@@ -2,6 +2,7 @@ import cmd_node
 import rospy
 from krssg_ssl_msgs.msg import BeliefState
 from utils.math_functions import kub_has_ball
+
 ##
 ## @brief      Class for kubs.
 ##
@@ -34,6 +35,9 @@ class kubs:
     ## @return     { description_of_the_return_value }
     ##
     
+    def update_state(self,state):
+        self.state=state
+        self.pos = state.homePos[self.kubs_id]
 
     def reset(self):
         self.dribbler = False
@@ -93,6 +97,7 @@ class kubs:
 
     def kick(self, power):
         self.power = power
+
 
 
     ##
