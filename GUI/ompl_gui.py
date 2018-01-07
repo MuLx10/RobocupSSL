@@ -12,13 +12,18 @@ from krssg_ssl_msgs.msg import point_2d
 from krssg_ssl_msgs.msg import planner_path
 from krssg_ssl_msgs.msg import point_SF
 from krssg_ssl_msgs.msg import gr_Commands
+from role import  GoToBall, GoToPoint
 import multiprocessing
+from kubs import kubs
+from math import atan2,pi
+from utils.math_functions import *
+
 MAJOR_AXIS_FACTOR = 10
 MINOR_AXIS_FACTOR = 2
 PI = 3.141592653589793
 radius  = 10
 VEL_ANGLE = 0
-
+BState = None
 from utils.config import *
 
 points_home = []
@@ -44,7 +49,7 @@ VEL_UNIT = 5
 BOT_ID = 0
 
 pub = rospy.Publisher('gui_params', point_SF)
-
+kubs_pub = rospy.Publisher('/grsim_data',gr_Commands,queue_size=1000)
 path_received=0
 
 
@@ -73,7 +78,11 @@ def Callback_VelProfile(msg):
         VEL_ANGLE = vel_theta    
 
 def Callback_BS(msg):
-    global points_home, points_home_theta, points_opp, ballPos
+    global points_home, points_home_theta, points_opp, ballPos,BState
+    
+    BState = msg
+    # print "Callback_BS"
+
     ballPos = BS_TO_GUI(msg.ballPos.x, msg.ballPos.y)
     points_home = []
     points_home_theta = []
@@ -111,15 +120,28 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow, QtGui.QWidget):
 
     
     def goToBall(self):
+        global BState,kubs_pub
+
         import signal
         signal.signal(signal.SIGINT, signal.SIG_DFL)
         msg=point_SF()
-        msg.bot_id = int(self.textBotId.text())
-        pub.publish(msg)
-        if(not self.t1==None):
-            self.t1.end()
-        self.t1 = multiprocessing.Process(target=self.goToPoint)
-        self.t1.start()
+
+        kubs_id = int(self.textBotId.text())
+        # msg.bot_id = kubs_id
+        # pub.publish(msg)
+        print "in goToBall",BState
+
+        if BState:
+            print "belief_state Subscriber"
+            kub = kubs.kubs(kubs_id,BState,kubs_pub)
+            g_fsm = GoToBall.GoToBall()
+            g_fsm.add_kub(kub)
+            g_fsm.add_theta(theta=normalize_angle(pi+atan2(BState.ballPos.y,BState.ballPos.y-3000)))
+            g_fsm.spin()
+            if not (self.t1 == None):
+                self.t1.terminate()
+            self.t1 = multiprocessing.Process(target=g_fsm.spin)
+            self.t1.start()
         # self.t1.terminate()
         #start_new_thread(self.goToPoint,())
         # start_new_thread(self.pidOperator,())
@@ -145,11 +167,15 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow, QtGui.QWidget):
         except Exception as e:
             print("Error: ", e)
             pass
-    def goToPoint(self):
-        try:
-            os.system('cd .. && python test_GoToPoint.py')
-        except:
-            pass
+    def goToPoint(self,kubs_id):
+        global BState,kubs_pub
+        if not BState:
+            kub = kubs.kubs(kubs_id,BState,kubs_pub)
+            g_fsm = GoToPoint.GoToPoint()
+            g_fsm.add_kub(kub)
+            g_fsm.add_point(point=BState.ballPos,orient=normalize_angle(pi+atan2(BState.ballPos.y,BState.ballPos.x-3000)))
+            g_fsm.spin()
+
     
     def drawBoundary(self):
         x1,y1 = BS_TO_GUI(3000, 2000)
