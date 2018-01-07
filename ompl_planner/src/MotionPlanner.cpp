@@ -150,6 +150,7 @@ bool Planning::plan(int start_row, int start_col, int goal_row, int goal_col){
   ob::ScopedState<> goal(ss_->getStateSpace());
   goal[0] = goal_row;
   goal[1] = goal_col;
+  selector = 3;
   ss_->setStartAndGoalStates(start, goal);
   for (int i = 0 ; i < 1 ; ++i){
         if(selector == 1){
@@ -188,10 +189,12 @@ bool Planning::plan(int start_row, int start_col, int goal_row, int goal_col){
   }
   const std::size_t ns = ss_->getProblemDefinition()->getSolutionCount();
   if (ss_->haveSolutionPath()){
+    cout<<"__HERE__\n"<<endl;
     ss_->simplifySolution();
     og::PathGeometric &p = ss_->getSolutionPath();
     ss_->getPathSimplifier()->simplifyMax(p);
     ss_->getPathSimplifier()->smoothBSpline(p);
+    cout<<"__FUNC_END__"<<endl;
     return true;
   }
   return false;
@@ -218,9 +221,6 @@ vector<krssg_ssl_msgs::point_2d> Planning::recordSolution(){
     s.y=h;
     vect1.push_back(s);
   }
-  cout<<"simplifyPoint start\n";
-  simplifyPoint(vect1);
-  cout<<"func end here\n";
   return vect1;
 }
 
