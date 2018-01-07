@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'sample.ui'
+# Form implementation generated from reading ui file 'window.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -42,6 +42,21 @@ class Ui_MainWindow(object):
         self.bot_id = QtGui.QLabel(self.centralwidget)
         self.bot_id.setGeometry(QtCore.QRect(740, 90, 41, 17))
         self.bot_id.setObjectName(_fromUtf8("bot_id"))
+        self.comboBox = QtGui.QComboBox(self.centralwidget)
+        self.comboBox.setGeometry(QtCore.QRect(740, 30, 161, 27))
+        self.comboBox.setObjectName(_fromUtf8("comboBox"))
+        self.comboBox.addItem(_fromUtf8(""))
+        self.comboBox.addItem(_fromUtf8(""))
+        self.comboBox.addItem(_fromUtf8(""))
+        self.comboBox.addItem(_fromUtf8(""))
+        self.comboBox.addItem(_fromUtf8(""))
+        self.comboBox.addItem(_fromUtf8(""))
+        self.comboBox.addItem(_fromUtf8(""))
+        self.comboBox.addItem(_fromUtf8(""))
+        self.comboBox.addItem(_fromUtf8(""))
+        self.goToBallFsm = QtGui.QPushButton(self.centralwidget)
+        self.goToBallFsm.setGeometry(QtCore.QRect(920, 110, 121, 27))
+        self.goToBallFsm.setObjectName(_fromUtf8("goToBallFsm"))
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1126, 25))
@@ -55,10 +70,10 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
         self.actionRRT_CONNECT = QtGui.QAction(MainWindow)
         self.actionRRT_CONNECT.setObjectName(_fromUtf8("actionRRT_CONNECT"))
-        self.actionRRT_X = QtGui.QAction(MainWindow)
-        self.actionRRT_X.setObjectName(_fromUtf8("actionRRT_X"))
-        self.menuDIFFERENT_RRT.addAction(self.actionRRT_CONNECT)
-        self.menuDIFFERENT_RRT.addAction(self.actionRRT_X)
+        self.actionRRTStar = QtGui.QAction(MainWindow)
+        self.actionRRTStar.setObjectName(_fromUtf8("actionRRTStar"))
+        self.actionRRT = QtGui.QAction(MainWindow)
+        self.actionRRT.setObjectName(_fromUtf8("actionRRT"))
         self.menubar.addAction(self.menuDIFFERENT_RRT.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -68,9 +83,20 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.GoToBall.setText(_translate("MainWindow", "GoToBall", None))
         self.bot_id.setText(_translate("MainWindow", "BotId", None))
+        self.comboBox.setItemText(0, _translate("MainWindow", "PRM", None))
+        self.comboBox.setItemText(1, _translate("MainWindow", "RRT", None))
+        self.comboBox.setItemText(2, _translate("MainWindow", "RRTConnect", None))
+        self.comboBox.setItemText(3, _translate("MainWindow", "RRTStar", None))
+        self.comboBox.setItemText(4, _translate("MainWindow", "LBTRRT", None))
+        self.comboBox.setItemText(5, _translate("MainWindow", "LazyRRT", None))
+        self.comboBox.setItemText(6, _translate("MainWindow", "TRRT", None))
+        self.comboBox.setItemText(7, _translate("MainWindow", "pRRT", None))
+        self.comboBox.setItemText(8, _translate("MainWindow", "EST", None))
+        self.goToBallFsm.setText(_translate("MainWindow", "GoToBall(FSM)", None))
         self.menuDIFFERENT_RRT.setTitle(_translate("MainWindow", "DIFFERENT_RRT", None))
         self.actionRRT_CONNECT.setText(_translate("MainWindow", "RRT_CONNECT", None))
-        self.actionRRT_X.setText(_translate("MainWindow", "RRT_X", None))
+        self.actionRRTStar.setText(_translate("MainWindow", "RRT_STAR", None))
+        self.actionRRT.setText(_translate("MainWindow", "RRT", None))
 
 
 if __name__ == "__main__":
